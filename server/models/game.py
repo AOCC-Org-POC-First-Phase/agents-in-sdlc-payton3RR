@@ -1,8 +1,23 @@
+"""
+Game Model for Tailspin Toys Crowd Funding Platform
+
+This module defines the Game model which represents individual games
+available for crowdfunding. Games are linked to publishers and categories
+and include rating information.
+"""
+
 from . import db
 from .base import BaseModel
 from sqlalchemy.orm import validates, relationship
+from typing import Dict, Any, Optional
 
 class Game(BaseModel):
+    """
+    Represents a game available for crowdfunding on the platform.
+    
+    Each game belongs to a publisher and category, and includes
+    descriptive information and user ratings.
+    """
     __tablename__ = 'games'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -19,19 +34,51 @@ class Game(BaseModel):
     publisher = relationship("Publisher", back_populates="games")
     
     @validates('title')
-    def validate_name(self, key, name):
+    def validate_name(self, key: str, name: str) -> str:
+        """
+        Validates the game title meets minimum length requirements.
+        
+        Args:
+            key: The field name being validated
+            name: The title value to validate
+            
+        Returns:
+            The validated title
+        """
         return self.validate_string_length('Game title', name, min_length=2)
     
     @validates('description')
-    def validate_description(self, key, description):
+    def validate_description(self, key: str, description: Optional[str]) -> Optional[str]:
+        """
+        Validates the game description meets minimum length requirements.
+        
+        Args:
+            key: The field name being validated
+            description: The description value to validate
+            
+        Returns:
+            The validated description or None
+        """
         if description is not None:
             return self.validate_string_length('Description', description, min_length=10, allow_none=True)
         return description
     
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Returns a string representation of the Game instance.
+        
+        Returns:
+            A formatted string with game title and ID
+        """
         return f'<Game {self.title}, ID: {self.id}>'
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the Game instance to a dictionary for JSON serialization.
+        
+        Returns:
+            Dictionary containing game data with related publisher and category info
+        """
         return {
             'id': self.id,
             'title': self.title,

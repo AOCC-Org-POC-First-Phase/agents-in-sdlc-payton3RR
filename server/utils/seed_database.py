@@ -1,12 +1,29 @@
+"""
+Database Seeding Utilities for Tailspin Toys Crowd Funding Platform
+
+This module provides functionality to populate the database with initial
+game, publisher, and category data from CSV files. It's used to bootstrap
+the crowdfunding platform with sample content.
+"""
+
 import csv
 import os
 import random
 from flask import Flask
 from models import db, Category, Game, Publisher
 from utils.database import init_db
+from typing import Dict, Any
 
-def create_app():
-    """Create and configure Flask app for database operations"""
+def create_app() -> Flask:
+    """
+    Create and configure Flask app for database operations.
+    
+    Creates a minimal Flask application instance with database
+    configuration suitable for seeding operations.
+    
+    Returns:
+        Configured Flask application instance
+    """
     app = Flask(__name__)
 
     # Initialize the database with the app
@@ -14,14 +31,20 @@ def create_app():
     
     return app
 
-def create_games():
-    """Create games, categories and publishers from CSV data for crowd funding platform"""
+def create_games() -> None:
+    """
+    Create games, categories and publishers from CSV data for crowd funding platform.
+    
+    Reads game data from a CSV file and creates corresponding database records
+    for games, publishers, and categories. Automatically generates descriptions
+    and star ratings for the crowdfunding context.
+    """
     app = create_app()
     
     with app.app_context():
         # Track which categories and publishers have been created
-        categories = {}  # name -> category object
-        publishers = {}  # name -> publisher object
+        categories: Dict[str, Category] = {}  # name -> category object
+        publishers: Dict[str, Publisher] = {}  # name -> publisher object
         
         # Read the CSV file
         csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
@@ -77,7 +100,13 @@ def create_games():
             
         print(f"Added {game_count} games with {len(categories)} categories and {len(publishers)} publishers")
 
-def seed_database():
+def seed_database() -> None:
+    """
+    Main entry point for database seeding operations.
+    
+    Calls the create_games function to populate the database
+    with initial game data from CSV files.
+    """
     create_games()
 
 if __name__ == '__main__':
