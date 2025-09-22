@@ -1,15 +1,27 @@
+"""
+Database Utilities for Tailspin Toys Crowd Funding Platform
+
+This module provides database initialization and configuration utilities
+for the Flask application. It handles SQLite database setup and
+connection management for the crowdfunding platform.
+"""
+
 import os
 from models import init_db as models_init_db
+from flask import Flask
+from typing import Optional
 
-def init_db(app, connection_string=None, testing=False):
+def init_db(app: Flask, connection_string: Optional[str] = None, testing: bool = False) -> None:
     """
     Initializes the database with the given Flask app and connection string.
-    If no connection string is provided, a default SQLite connection string is used.
+    
+    If no connection string is provided, a default SQLite connection string is used
+    pointing to the project's data directory.
     
     Args:
-        app: The Flask application instance
-        connection_string: Optional database connection string
-        testing: If True, allows reinitialization for testing
+        app: The Flask application instance to configure
+        connection_string: Optional database connection string. If None, uses default SQLite
+        testing: If True, allows reinitialization for testing purposes
     """
     if connection_string is None:
         connection_string = __get_connection_string()
@@ -17,9 +29,15 @@ def init_db(app, connection_string=None, testing=False):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     models_init_db(app, testing=testing)
 
-def __get_connection_string():
+def __get_connection_string() -> str:
     """
-    Returns the connection string for the database.
+    Returns the default SQLite connection string for the application.
+    
+    Creates the data directory if it doesn't exist and returns a connection
+    string pointing to the tailspin-toys.db file in the project's data folder.
+    
+    Returns:
+        SQLite connection string for the application database
     """
     # Get the server directory
     server_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
